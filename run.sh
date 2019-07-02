@@ -1,0 +1,1 @@
+./build/calgs $1
