@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "str_permutations.h"
 
 int main(int argc, char** argv) {
