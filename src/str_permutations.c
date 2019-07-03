@@ -2,75 +2,49 @@
 #include "math_utils.h"
 
 #include <string.h>
+#include <stdio.h>
 
-#define MAX_PERMUTATIONS_BUFFER_SIZE 255
+#include "str_utils.h"
 
 void print_permutation(unsigned int num, char* str) {
   printf("%d --> %s\n", num, str);
 }
 
-void swap(char* a, char* b) {
-  char temp = *a;
-  *a = *b;
-  *b = temp;
-}
-
 void max_permutations(char* str) {
-  char buffer[MAX_PERMUTATIONS_BUFFER_SIZE];
-  memset(buffer, 0, sizeof(MAX_PERMUTATIONS_BUFFER_SIZE));
-  unsigned int len = strlen(str);
+	int len = strlen(str);
+	char* buffer = malloc(len);
+	int num_perms = factorial(len);
+	strcpy(buffer, str);
 
-  // bail if we can't handle this string with our stack allocated buffer
-  if (len > MAX_PERMUTATIONS_BUFFER_SIZE) return;
-  
-  unsigned int num_perms = factorial(len);
-  if (num_perms <= 1) return;
+	int num_outer_swap_offsets = len - 3;
 
-  strcpy(buffer, str);
+	int* outer_swap_offsets = malloc(num_outer_swap_offsets);
 
-  // handle simple cases
-  if (len == 1) {
-    print_permutation(1, str);
-  } else if (len == 2) {
-    print_permutation(1, buffer);
-    swap(&buffer[0], &buffer[1]);
-    print_permutation(2, buffer);
-  } else {
-    // move into the actual algorithm
-    const unsigned int inner_swap_count = 2;
-    unsigned int inner_swap_offset = 1;
-    unsigned int inner_swap_index = len - 3;
-    const unsigned int outer_swap_count = num_perms / len;
-    unsigned int outer_swap_index = len - 1;
+	for (int i = 0; i < num_outer_swap_offsets; i++) {
+		outer_swap_offsets[i] = i + 1;
+	}
 
-    unsigned int middle_swap_index = len - 4;
-    
-    for (unsigned int i = 0; i < num_perms; i++) {
-      inner_swap_offset = inner_swap_offset % 3;
-      if (inner_swap_index == 0) {
-        inner_swap_index = len -3;
-      }
-      if (i % outer_swap_count == 0) {
-        strcpy(buffer, str);
-        swap(&buffer[0], &buffer[outer_swap_index--]);
-        print_permutation(i + 1, buffer);
-        continue;
-      } else if (i % 6 == 0) {
-        if (middle_swap_index == 0) {
-          middle_swap_index = len - 4;
-        }
+	for (int i = 0; i < num_perms; i++) {
+		print_permutation(i + 1, buffer);
 
-        swap(&buffer[middle_swap_index--], &buffer[inner_swap_index]);
-        print_permutation(i + 1, buffer);
-        continue;
-      } else if (i % inner_swap_count == 0) {
-        swap(&buffer[inner_swap_index], &buffer[inner_swap_index + inner_swap_offset]);
-        print_permutation(i + 1, buffer);
-        continue;
-      } 
+		for (int j = 0; j < num_outer_swap_offsets; j++) {
+			int offset_num_perms = num_perms;
+			int offset_len = len;
+			if ((i + 1) % (offset_num_perms /= offset_len) == 0) {
+				swap(&buffer[len - offset_len], &buffer[outer_swap_offsets[len - offset_len]++]);
+				offset_len--;
+				goto end_loop;
+			}
+		}
 
-      swap(&buffer[len - 1], &buffer[len - 2]);
-      print_permutation(i + 1, buffer);
-    }
-  }
+		if ((i + 1) % 2 == 0) {
+			swap(&buffer[len - 3], &buffer[len - 1]);
+			continue;
+		}
+		swap(&buffer[len - 2], &buffer[len - 1]);
+	end_loop:
+		continue;
+	}
+
+	free(buffer);
 }
