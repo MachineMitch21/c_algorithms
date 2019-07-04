@@ -57,4 +57,5 @@ void max_permutations(char* str) {
 	}
 
 	free(buffer);
+	free(outer_swap_offsets);
 }
