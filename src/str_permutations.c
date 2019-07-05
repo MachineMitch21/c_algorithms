@@ -10,6 +10,19 @@ void print_permutation(unsigned int num, char* str) {
   printf("%d --> %s\n", num, str);
 }
 
+void max_permutations_recursive(char* str, int l, int r) {
+	static int perm_count = 0;
+	if (l == r) {
+		print_permutation(++perm_count, str);
+	} else {
+		for (int i = l; i <= r; i++) {
+			swap(&str[l], &str[i]);
+			max_permutations_recursive(str, l + 1, r);
+			swap(&str[l], &str[i]);
+		}
+	}
+}
+
 void max_permutations(char* str) {
 	int len = strlen(str);
 	char* buffer = malloc(len);
@@ -57,4 +70,5 @@ void max_permutations(char* str) {
 	}
 
 	free(buffer);
+	free(outer_swap_offsets);
 }
