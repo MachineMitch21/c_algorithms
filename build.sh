@@ -5,7 +5,7 @@ prog_name="calgs"
 
 mkdir -p "$obj_dir" "$out_dir"
 
-for c_file in "$src_dir"/*.c; do
+for c_file in $(find "$src_dir" -type f -name '*.c'); do
   gcc -Wall -Wextra -pedantic -c -o "$obj_dir"/$(basename "$c_file").o "$c_file"
 done
 
